@@ -3,7 +3,7 @@
 ```
 my-ml-project/
 ├── .python-version
-├── pyproject.toml          # Зависимости и конфигурация инструментов (uv, ruff, pytest)
+├── pyproject.toml          # Зависимости и конфигурация инструментов (uv)
 ├── uv.lock                 # Единый lockfile для воспроизводимости
 ├── README.md
 ├── src/
@@ -17,10 +17,10 @@ my-ml-project/
 ├── tests/                  # Юнит-тесты (pytest)
 ├── notebooks/              # Jupyter-ноутбуки (только для исследования)
 ├── conf/                   # Конфигурации
-├── data/                   # Данные (не коммитятся)
+├── data/                   # Данные
 │   ├── raw/
 │   ├── interim/
 │   └── processed/
-├── models/                 # Обученные артефакты (не коммитятся)
+├── models/                 # Обученные артефакты
 └── reports/                # Сгенерированные отчеты и графики
 ```
