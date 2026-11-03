@@ -11,4 +11,8 @@ wheels/
 
 # Agents
 .dsh/
-/data
+
+# folders with data
+/data/raw
+/data/interim
+/data/processed
