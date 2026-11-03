@@ -16,3 +16,6 @@ wheels/
 /data/raw/*
 /data/interim/*
 /data/processed/*
+!/data/raw/*
+!/data/interim/*
+!/data/processed/*
