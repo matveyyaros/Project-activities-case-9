@@ -18,6 +18,9 @@ dependencies = [
     "xgboost>=3.4.1",
 ]
 
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [project.scripts]
 project-activities-case-9 = "project_activities_case_9:main"
 
