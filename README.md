@@ -1,17 +1,18 @@
 ## Архитектура
 
 ```
-my-ml-project/
+Project-activities-case-9/
 ├── .python-version
 ├── pyproject.toml          # Зависимости и конфигурация инструментов (uv)
 ├── uv.lock                 # Единый lockfile для воспроизводимости
 ├── README.md
 ├── src/
-│   └── my_project/         # Основной пакет с кодом
+│   └── project_activities_case_9/         # Основной пакет с кодом
 │       ├── __init__.py
 │       ├── data/           # Загрузка и предобработка данных
 │       ├── features/       # Построение признаков
-│       ├── models/         # Определения моделей и обучение
+│       ├── models/         # Определения моделей
+│       ├── train/          # Обучение
 │       ├── evaluation/     # Метрики и отчеты
 │       └── serving/        # Код для инференса 
 ├── tests/                  # Юнит-тесты (pytest)
