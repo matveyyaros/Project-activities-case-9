@@ -23,3 +23,7 @@ wheels/
 #folder models
 /models/*
 !/models/.gitkeep
+
+#folder report
+/report/*
+!reports/.gitkeep
