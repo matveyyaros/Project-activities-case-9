@@ -7,8 +7,10 @@ from sklearn.pipeline import Pipeline
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.compose import ColumnTransformer
 import pandas as pd
+
 from project_activities_case_9.data.load_data import load_data
 
+from project_activities_case_9.evaluation.GenerateReport import generate_report
 def build_preprocessing(cfg_prep) -> list:
     """Собирает шаги препроцессинга из cfg.preprocessing.
 
@@ -63,6 +65,7 @@ def main(cfg: DictConfig):
     # TODO
     # 5. Оценка на тесте
     y_pred = pipeline.predict(X_test)
+    generate_report(y_true=y_test,y_pred=y_pred,cfg=cfg,model=pipeline,output_dir=hydra.core.hydra_config.HydraConfig.get().runtime.output_dir+cfg.output_path)
 
     # 6. Сохранение модели
     joblib.dump(pipeline, hydra.core.hydra_config.HydraConfig.get().runtime.output_dir+cfg.output_path)
