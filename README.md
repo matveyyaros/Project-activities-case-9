@@ -24,10 +24,11 @@ uv run python  train.py
 
 Выбираемые параметры могут быть описаны в conf\config.yaml, модели выбираются из conf\pipeline
 
-**Пример:**
+**Примеры:**
 
 ```
 uv run python  train.py seed=57
+uv run python train.py pipeline@_global_=BaseLinearRegression
 ```
 
 ## Архитектура
