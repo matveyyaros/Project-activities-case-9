@@ -1,0 +1,23 @@
+# conf/pipeline/default.yaml
+preprocessing:
+  - _target_: sklearn.preprocessing.StandardScaler
+  - _target_: sklearn.compose.ColumnTransformer
+    transformers:
+      - - num
+        - _target_: sklearn.pipeline.Pipeline
+          steps:
+            - - imputer
+              - _target_: sklearn.impute.SimpleImputer
+                strategy: median
+            - - scaler
+              - _target_: sklearn.preprocessing.StandardScaler
+        - ${data.numerical_features}
+    remainder: passthrough
+    verbose_feature_names_out: false
+
+  - _target_: sklearn.decomposition.PCA
+    n_components: 2
+    random_state: ${seed}
+
+model:
+  _target_: sklearn.linear_model.LinearRegression
