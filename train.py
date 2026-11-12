@@ -65,11 +65,13 @@ def main(cfg: DictConfig):
     # TODO
     # 5. Оценка на тесте
     y_pred = pipeline.predict(X_test)
-    generate_report(y_true=y_test,y_pred=y_pred,cfg=cfg,model=pipeline,output_dir=hydra.core.hydra_config.HydraConfig.get().runtime.output_dir+cfg.output_path)
+    report_output=hydra.core.hydra_config.HydraConfig.get().runtime.output_dir+cfg.output_path
+    generate_report(y_true=y_test,y_pred=y_pred,cfg=cfg,model=pipeline,output_dir=report_output)
 
     # 6. Сохранение модели
-    joblib.dump(pipeline, hydra.core.hydra_config.HydraConfig.get().runtime.output_dir+cfg.output_path)
-    print(f"✅ Модель сохранена в {hydra.core.hydra_config.HydraConfig.get().runtime.output_dir+cfg.output_path}")
+    model_output=hydra.core.hydra_config.HydraConfig.get().runtime.output_dir+cfg.output_path
+    joblib.dump(pipeline, model_output)
+    print(f"✅ Модель сохранена в {model_output}")
 
 
 if __name__ == "__main__":
