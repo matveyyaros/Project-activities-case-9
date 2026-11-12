@@ -25,5 +25,5 @@ wheels/
 !/models/.gitkeep
 
 #folder report
-/report/*
+/reports/*
 !reports/.gitkeep

@@ -76,6 +76,7 @@ def main(cfg: DictConfig):
     # 3. Опциональная кросс-валидация на train
     if cfg.cv.enabled:
         scores = cross_val_score(pipeline, X_train, y_train, cv=cfg.cv.folds)
+        cv_scores=scores
         print(f"CV accuracy: {scores.mean():.4f} ± {scores.std():.4f}")
 
     # 4. Обучение
@@ -85,8 +86,8 @@ def main(cfg: DictConfig):
     y_pred = pipeline.predict(X_test)
 
     # 6. Сохранение модели
-    joblib.dump(pipeline, cfg.output_path)
-    print(f"✅ Модель сохранена в {cfg.output_path}")
+    joblib.dump(pipeline, hydra.core.hydra_config.HydraConfig.get().runtime.output_dir+cfg.output_path)
+    print(f"✅ Модель сохранена в {hydra.core.hydra_config.HydraConfig.get().runtime.output_dir+cfg.output_path}")
 
 
 if __name__ == "__main__":
