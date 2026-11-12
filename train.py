@@ -10,46 +10,25 @@ import pandas as pd
 from project_activities_case_9.data.load_data import load_data
 
 def build_preprocessing(cfg_prep) -> list:
-    """Нормализует узел cfg.preprocessing в список шагов (name, estimator).
+    """Собирает шаги препроцессинга из cfg.preprocessing.
 
-    Поддерживает:
-      * None            -> []
-      * DictConfig      -> [(name, instance)]      (один трансформер, в т.ч. ColumnTransformer)
-      * ListConfig/list -> [(name, instance), ...] (последовательность шагов)
+    Требует, чтобы в YAML у каждого _target_-узла стоял `_convert_: all` —
+    тогда Hydra рекурсивно приводит вложенные ListConfig/DictConfig
+    к нативным list/dict, и sklearn получает корректные списки колонок.
     """
     if cfg_prep is None:
         return []
 
-    if OmegaConf.is_list(cfg_prep):
-        items = list(cfg_prep)
-    else:
-        items = [cfg_prep]           # одиночный словарь, включая ColumnTransformer
+    items = list(cfg_prep) if OmegaConf.is_list(cfg_prep) else [cfg_prep]
 
     steps = []
     for i, item in enumerate(items):
         if "_target_" not in item:
-            raise ValueError(
-                f"preprocessing[{i}] не содержит _target_: {item}"
-            )
+            raise ValueError(f"preprocessing[{i}] не содержит _target_: {item}")
         cls_name = item._target_.split(".")[-1]
         name = f"prep_{i}_{cls_name}"
-        obj = hydra.utils.instantiate(item)
+        steps.append((name, hydra.utils.instantiate(item)))
 
-        nodes = [obj]
-        for node in nodes:
-            if isinstance(node, ColumnTransformer):
-                fixed = []
-                for t in node.transformers:
-                    if isinstance(t, (list, tuple)):
-                        if len(t) >= 2:
-                            nodes.append(t[1])   # вложенный estimator
-                        t = tuple(t)
-                    fixed.append(t)
-                node.transformers = fixed
-
-            elif isinstance(node, Pipeline):
-                for _, step in node.steps:
-                    nodes.append(step)
     return steps
 
 @hydra.main(config_path="./conf", config_name="config", version_base=None)
