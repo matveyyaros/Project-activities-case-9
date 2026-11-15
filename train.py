@@ -2,7 +2,7 @@ import hydra
 from omegaconf import DictConfig, OmegaConf
 import joblib
 
-from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
 from sklearn.pipeline import Pipeline
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.compose import ColumnTransformer
@@ -59,18 +59,31 @@ def main(cfg: DictConfig):
         scores = cross_val_score(pipeline, X_train, y_train, cv=cfg.cv.folds)
         cv_scores=scores
         print(f"CV accuracy: {scores.mean():.4f} ± {scores.std():.4f}")
-
+    
     # 4. Обучение
-    pipeline.fit(X_train, y_train)
+    model=pipeline
+    if "grid_param" in cfg:
+        param_grid = OmegaConf.to_container(cfg.grid_param, resolve=True)
+        grid = GridSearchCV(
+            estimator=model,
+            param_grid=param_grid["hyperparams"],
+            cv=param_grid["cv"],
+            scoring=param_grid["scoring"],
+            n_jobs=param_grid["n_jobs"]
+            )
+        grid.fit(X_train, y_train)
+        model=grid.best_estimator_
+    else:
+        model.fit(X_train, y_train)
     # TODO
     # 5. Оценка на тесте
-    y_pred = pipeline.predict(X_test)
+    y_pred = model.predict(X_test)
     report_output=hydra.core.hydra_config.HydraConfig.get().runtime.output_dir+cfg.output_path
-    generate_report(y_true=y_test,y_pred=y_pred,cfg=cfg,model=pipeline,output_dir=report_output)
+    generate_report(y_true=y_test,y_pred=y_pred,cfg=cfg,model=model,output_dir=report_output)
 
     # 6. Сохранение модели
     model_output=hydra.core.hydra_config.HydraConfig.get().runtime.output_dir+cfg.output_path
-    joblib.dump(pipeline, model_output)
+    joblib.dump(model, model_output)
     print(f"✅ Модель сохранена в {model_output}")
 
 

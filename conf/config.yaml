@@ -1,6 +1,7 @@
 
 defaults:
-  - pipeline@_global_: default   # ← ключевой момент
+  - pipeline@_global_: default
+  - grid_param: 
   - _self_
 
 seed: 42
@@ -10,10 +11,8 @@ output_path: "\\model.joblib"
 
 hydra:
   run:
-    # Теперь путь будет: outputs/название_задачи/2026-11-13_14-30-00/
     dir: reports/${now:%Y-%m-%d_%H-%M-%S}
   sweep:
-    # Для мультизапусков: multirun/дата/время/номер_задачи
     dir: multirun/${now:%Y-%m-%d}/${now:%H-%M-%S}
     subdir: ${hydra.job.num}
 
@@ -27,3 +26,4 @@ data:
 cv:
   enabled: true
   folds: 5
+
