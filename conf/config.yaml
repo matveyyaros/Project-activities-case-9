@@ -1,7 +1,7 @@
 
 defaults:
-  - pipeline@_global_: default
-  - grid_param: 
+  - pipeline@_global_: Ridge
+  - grid_param: grid_Ridge
   - _self_
 
 seed: 42
@@ -18,12 +18,21 @@ hydra:
 
 data:
   test_size: 0.2
+  target_feature:
+    yield
   numerical_features:
-    - MaxOfLowerTRange
+    - clonesize
+    - honeybee
+    - bumbles
+    - andrena
+    - osmia
+    - AverageOfUpperTRange
     - RainingDays
+
 
 
 cv:
   enabled: true
-  folds: 5
+  folds: 10
+  scoring: r2
 

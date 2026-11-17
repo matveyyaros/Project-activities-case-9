@@ -2,11 +2,13 @@ import hydra
 from omegaconf import DictConfig, OmegaConf
 import joblib
 
-from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
+from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV, cross_validate,KFold,cross_val_predict
 from sklearn.pipeline import Pipeline
 from sklearn.metrics import accuracy_score, classification_report
-from sklearn.compose import ColumnTransformer
+from sklearn.compose import ColumnTransformer, TransformedTargetRegressor
+from sklearn.preprocessing import StandardScaler
 import pandas as pd
+import numpy as np
 
 from project_activities_case_9.data.load_data import load_data
 
@@ -40,8 +42,9 @@ def main(cfg: DictConfig):
     # 1. Данные
     load_data()
     df= pd.read_csv("data/raw/saurabhshahane/wild-blueberry-yield-prediction/Data in Brief/Data in Brief/WildBlueberryPollinationSimulationData.csv")
-    X= df.drop("yield",axis=1)
-    y=df["yield"]
+    df = df[df["Row#"] < 759]
+    X= df[cfg.data.numerical_features]
+    y=df[cfg.data.target_feature]
     X_train, X_test, y_train, y_test = train_test_split(
         X, y,
         test_size=cfg.data.test_size,
@@ -53,24 +56,24 @@ def main(cfg: DictConfig):
     steps.append(("model", hydra.utils.instantiate(cfg.model)))
     pipeline = Pipeline(steps)
     print("Pipeline steps:", [name for name, _ in pipeline.steps])
- 
-    # 3. Опциональная кросс-валидация на train
-    if cfg.cv.enabled:
-        scores = cross_val_score(pipeline, X_train, y_train, cv=cfg.cv.folds)
-        cv_scores=scores
-        print(f"CV accuracy: {scores.mean():.4f} ± {scores.std():.4f}")
     
-    # 4. Обучение
+    # 3. Обучение
+    cv = KFold(n_splits=cfg.cv.folds, shuffle=True, random_state=cfg.seed)
+    scoring = cfg.cv.scoring
     model=pipeline
     if "grid_param" in cfg:
         param_grid = OmegaConf.to_container(cfg.grid_param, resolve=True)
         grid = GridSearchCV(
-            estimator=model,
+            estimator=pipeline,
             param_grid=param_grid["hyperparams"],
-            cv=param_grid["cv"],
-            scoring=param_grid["scoring"],
-            n_jobs=param_grid["n_jobs"]
-            )
+            cv=cv,
+            scoring=scoring,
+            n_jobs=param_grid["n_jobs"],
+            refit=True,
+            return_train_score=True,
+            error_score="raise",
+            verbose=1,
+        )
         grid.fit(X_train, y_train)
         model=grid.best_estimator_
     else:
@@ -79,7 +82,7 @@ def main(cfg: DictConfig):
     # 5. Оценка на тесте
     y_pred = model.predict(X_test)
     report_output=hydra.core.hydra_config.HydraConfig.get().runtime.output_dir+cfg.output_path
-    generate_report(y_true=y_test,y_pred=y_pred,cfg=cfg,model=model,output_dir=report_output)
+    generate_report(y_true=y_test,y_pred=y_pred,cfg=cfg,model=model,output_dir=report_output,grid=grid)
 
     # 6. Сохранение модели
     model_output=hydra.core.hydra_config.HydraConfig.get().runtime.output_dir+cfg.output_path
