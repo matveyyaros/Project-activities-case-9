@@ -1,0 +1,16 @@
+defaults:
+  - /grid_param: grid_LinearRegression_MinMax 
+
+name: LinearRegression_MinMax
+
+preprocessing:
+
+  - _target_: sklearn.preprocessing.MinMaxScaler
+
+  - _target_: sklearn.preprocessing.PolynomialFeatures
+    include_bias: false
+
+  - _target_: sklearn.preprocessing.MinMaxScaler
+
+model:
+  _target_: sklearn.linear_model.LinearRegression

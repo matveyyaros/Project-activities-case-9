@@ -4,7 +4,7 @@ import joblib
 
 from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV, cross_validate,KFold,cross_val_predict
 from sklearn.pipeline import Pipeline
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import accuracy_score, classification_report, r2_score
 from sklearn.compose import ColumnTransformer, TransformedTargetRegressor
 from sklearn.preprocessing import StandardScaler
 import pandas as pd
@@ -13,6 +13,9 @@ import numpy as np
 from project_activities_case_9.data.load_data import load_data
 
 from project_activities_case_9.evaluation.GenerateReport import generate_report
+
+import warnings
+from sklearn.exceptions import ConvergenceWarning
 def build_preprocessing(cfg_prep) -> list:
     """Собирает шаги препроцессинга из cfg.preprocessing.
 
@@ -38,6 +41,7 @@ def build_preprocessing(cfg_prep) -> list:
 @hydra.main(config_path="./conf", config_name="config", version_base=None)
 def main(cfg: DictConfig):
     print(OmegaConf.to_yaml(cfg))
+    warnings.filterwarnings("ignore", category=ConvergenceWarning)
 
     # 1. Данные
     load_data()
@@ -81,6 +85,7 @@ def main(cfg: DictConfig):
     # TODO
     # 5. Оценка на тесте
     y_pred = model.predict(X_test)
+    print(r2_score(y_test,y_pred))
     report_output=hydra.core.hydra_config.HydraConfig.get().runtime.output_dir+cfg.output_path
     generate_report(y_true=y_test,y_pred=y_pred,cfg=cfg,model=model,output_dir=report_output,grid=grid)
 

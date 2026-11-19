@@ -29,7 +29,11 @@ uv run python  train.py
 ```
 uv run python  train.py seed=57
 uv run python train.py pipeline@_global_=BaseLinearRegression
+# запуск по всем моделям
+uv run python train.py -m "pipeline@_global_=glob(*)"
 ```
+
+
 
 ## Архитектура
 

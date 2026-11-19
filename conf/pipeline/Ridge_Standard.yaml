@@ -1,3 +1,8 @@
+defaults:
+  - /grid_param: grid_Ridge_Standard
+
+name: Ridge_Standard
+
 preprocessing:
 
   - _target_: sklearn.preprocessing.StandardScaler

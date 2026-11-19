@@ -1,0 +1,21 @@
+defaults:
+  - /grid_param: grid_SGDRegressor_Normalizer
+
+name: SGDRegressor_Normalizer
+
+preprocessing:
+
+  - _target_: sklearn.preprocessing.Normalizer
+
+  - _target_: sklearn.preprocessing.PolynomialFeatures
+    include_bias: false
+
+  - _target_: sklearn.preprocessing.Normalizer
+
+model:
+  _target_: sklearn.linear_model.SGDRegressor
+  eta0: 0.0001
+  learning_rate: adaptive
+  max_iter: 200000
+  random_state: ${seed}
+  loss: huber

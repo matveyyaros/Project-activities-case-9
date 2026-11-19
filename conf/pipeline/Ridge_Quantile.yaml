@@ -1,0 +1,18 @@
+defaults:
+  - /grid_param: grid_Ridge_Quantile
+
+name: Ridge_Quantile
+
+preprocessing:
+
+  - _target_: sklearn.preprocessing.QuantileTransformer
+    random_state: ${seed}
+
+  - _target_: sklearn.preprocessing.PolynomialFeatures
+    include_bias: false
+
+  - _target_: sklearn.preprocessing.QuantileTransformer
+    random_state: ${seed}
+
+model:
+  _target_: sklearn.linear_model.Ridge

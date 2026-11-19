@@ -1,5 +1,0 @@
-# conf/pipeline/default.yaml
-preprocessing:
-
-model:
-  _target_: sklearn.linear_model.LinearRegression

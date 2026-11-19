@@ -1,0 +1,16 @@
+defaults:
+  - /grid_param: grid_LinearRegression_Normalizer 
+
+name: LinearRegression_Normalizer
+
+preprocessing:
+
+  - _target_: sklearn.preprocessing.Normalizer
+
+  - _target_: sklearn.preprocessing.PolynomialFeatures
+    include_bias: false
+
+  - _target_: sklearn.preprocessing.Normalizer
+
+model:
+  _target_: sklearn.linear_model.LinearRegression

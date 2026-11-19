@@ -1,0 +1,16 @@
+defaults:
+  - /grid_param: grid_LinearRegression_Robust 
+
+name: LinearRegression_Robust
+
+preprocessing:
+
+  - _target_: sklearn.preprocessing.RobustScaler
+
+  - _target_: sklearn.preprocessing.PolynomialFeatures
+    include_bias: false
+
+  - _target_: sklearn.preprocessing.RobustScaler
+
+model:
+  _target_: sklearn.linear_model.LinearRegression

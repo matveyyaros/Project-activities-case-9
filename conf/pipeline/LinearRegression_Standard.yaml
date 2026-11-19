@@ -1,0 +1,15 @@
+defaults:
+  - /grid_param: grid_LinearRegression_Standard 
+
+name: LinearRegression_Standard
+
+preprocessing:
+
+  - _target_: sklearn.preprocessing.StandardScaler
+
+  - _target_: sklearn.preprocessing.PolynomialFeatures
+    include_bias: false
+
+  - _target_: sklearn.preprocessing.StandardScaler
+model:
+  _target_: sklearn.linear_model.LinearRegression

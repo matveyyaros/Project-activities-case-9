@@ -1,3 +1,8 @@
+defaults:
+  - /grid_param: grid_SGDRegressor_Standard
+
+name: SGDRegressor_Standard
+
 preprocessing:
 
   - _target_: sklearn.preprocessing.StandardScaler

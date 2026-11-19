@@ -1,0 +1,7 @@
+defaults:
+  - /grid_param: grid_Ridge_None 
+
+name: Ridge_None
+
+model:
+  _target_: sklearn.linear_model.Ridge

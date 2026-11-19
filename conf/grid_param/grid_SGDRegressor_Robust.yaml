@@ -1,0 +1,8 @@
+cv: 5
+scoring: 'r2'
+n_jobs: -1
+hyperparams:
+  prep_1_PolynomialFeatures__degree: [1, 2, 3]
+  model__alpha: [0.0001, 0.001, 0.01]
+  model__penalty: ['l2', 'l1', 'elasticnet']
+  model__loss: ['squared_error', 'huber', 'epsilon_insensitive']
