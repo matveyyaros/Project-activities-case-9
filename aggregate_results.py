@@ -69,6 +69,35 @@ def extract_scoring_metric(grid_search_data: Dict) -> str:
     return grid_search_data.get('scoring', 'unknown')
 
 
+def extract_val_score(metrics_data: Dict, scoring_metric: str) -> Optional[float]:
+    """
+    Извлекает значение метрики на валидации из metrics.json.
+    
+    Args:
+        metrics_data: Данные из metrics.json
+        scoring_metric: Название метрики (например, 'r2', 'accuracy')
+        
+    Returns:
+        Значение метрики или None
+    """
+    if not metrics_data:
+        return None
+    
+    metrics = metrics_data.get('metrics', {})
+    
+    # Ищем метрику по названию
+    if scoring_metric in metrics:
+        return metrics[scoring_metric]
+    
+    # Если метрика не найдена, пробуем常见 варианты
+    common_metrics = ['r2', 'accuracy', 'f1', 'roc_auc', 'mae', 'rmse', 'mse']
+    for metric in common_metrics:
+        if metric in metrics:
+            return metrics[metric]
+    
+    return None
+
+
 def extract_cv_split_info(grid_search_data: Dict) -> Dict[str, Any]:
     """
     Извлекает информацию о параметрах разбиения кросс-валидации.
@@ -210,8 +239,18 @@ def aggregate_results(base_path: str) -> tuple:
             print(f"  Ошибка: не удалось загрузить grid_search.json")
             continue
         
+        # Загружаем metrics.json для получения val_score
+        metrics_file = arch_folder / 'report' / 'metrics.json'
+        metrics_data = load_json_file(metrics_file)
+        
         scoring_metric = extract_scoring_metric(grid_search_data)
         combinations = extract_cv_results(grid_search_data)
+        
+        # Извлекаем val_score для лучшей модели
+        val_score = extract_val_score(metrics_data, scoring_metric)
+        
+        # Определяем индекс лучшей комбинации
+        best_index = grid_search_data.get('best_index', 0)
         
         # Извлекаем информацию о разбиении только один раз (все модели используют одинаковое разбиение)
         if cv_info is None:
@@ -219,7 +258,9 @@ def aggregate_results(base_path: str) -> tuple:
         
         print(f"  Найдено {len(combinations)} комбинаций гиперпараметров")
         
-        for combo in combinations:
+        for i, combo in enumerate(combinations):
+            # val_score только для лучшей комбинации
+            is_best = (i == best_index)
             result = {
                 'architecture': architecture_name,
                 'hyperparameters': combo['hyperparameters'],
@@ -228,6 +269,7 @@ def aggregate_results(base_path: str) -> tuple:
                 'train_score_std': combo['train_score_std'],
                 'test_score_mean': combo['test_score_mean'],
                 'test_score_std': combo['test_score_std'],
+                'val_score': val_score if is_best else None,
             }
             all_results.append(result)
     
