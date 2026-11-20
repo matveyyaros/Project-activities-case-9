@@ -1,0 +1,37 @@
+
+defaults:
+  - pipeline@_global_: Ridge_None
+  - _self_
+
+seed: 1911
+output_path: "\\model.joblib"
+
+
+
+hydra:
+  run:
+    dir: reports/${now:%Y-%m-%d_%H-%M-%S}
+  sweep:
+    dir: reports/multirun/${now:%Y-%m-%d}/${now:%H-%M-%S}
+    subdir: ${name}
+
+data:
+  test_size: 0.2
+  target_feature:
+    yield
+  numerical_features:
+    - clonesize
+    - honeybee
+    - bumbles
+    - andrena
+    - osmia
+    - AverageOfUpperTRange
+    - RainingDays
+
+
+
+cv:
+  enabled: true
+  folds: 10
+  scoring: r2
+

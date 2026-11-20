@@ -1,0 +1,16 @@
+defaults:
+  - /grid_param: grid_Ridge_MaxAbs
+
+name: Ridge_MaxAbs
+
+preprocessing:
+
+  - _target_: sklearn.preprocessing.MaxAbsScaler
+
+  - _target_: sklearn.preprocessing.PolynomialFeatures
+    include_bias: false
+
+  - _target_: sklearn.preprocessing.MaxAbsScaler
+
+model:
+  _target_: sklearn.linear_model.Ridge

@@ -1,0 +1,18 @@
+defaults:
+  - /grid_param: grid_LinearRegression_Quantile 
+
+name: LinearRegression_Quantile
+
+preprocessing:
+
+  - _target_: sklearn.preprocessing.QuantileTransformer
+    random_state: ${seed}
+
+  - _target_: sklearn.preprocessing.PolynomialFeatures
+    include_bias: false
+
+  - _target_: sklearn.preprocessing.QuantileTransformer
+    random_state: ${seed}
+
+model:
+  _target_: sklearn.linear_model.LinearRegression
