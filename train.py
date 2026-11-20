@@ -56,7 +56,10 @@ def main(cfg: DictConfig):
     )
 
     # 2. Пайплайн: препроцессинг (0..N шагов) + модель
-    steps = build_preprocessing(cfg.preprocessing)
+    if "preprocessing" in cfg:
+        steps = build_preprocessing(cfg.preprocessing)
+    else:
+        steps=[]
     steps.append(("model", hydra.utils.instantiate(cfg.model)))
     pipeline = Pipeline(steps)
     print("Pipeline steps:", [name for name, _ in pipeline.steps])
