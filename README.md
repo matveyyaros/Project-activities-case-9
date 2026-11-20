@@ -26,14 +26,18 @@ uv run python  train.py
 
 **Примеры:**
 
-```
+```Shell
 uv run python  train.py seed=57
 uv run python train.py pipeline@_global_=BaseLinearRegression
 # запуск по всем моделям
 uv run python train.py -m "pipeline@_global_=glob(*)"
 ```
 
+### Оценка всех моделей 
 
+```Shell
+uv run python aggregate_results.py "Путь до папки, где лежит папка с отчетом о модели"
+```
 
 ## Архитектура
 

@@ -9,6 +9,7 @@
 
 import os
 import json
+import argparse
 import pandas as pd
 from pathlib import Path
 from typing import Dict, List, Any, Optional
@@ -16,7 +17,8 @@ import warnings
 
 warnings.filterwarnings('ignore')
 
-PATH_folder = "reports\\multirun\\2026-11-20\\12-11-23"
+# Значение по умолчанию
+PATH_folder = "reports\\multirun\\2026-11-20\\13-39-34"
 
 
 def find_architecture_folders(base_path: str) -> List[Path]:
@@ -329,21 +331,39 @@ def save_results(df: pd.DataFrame, base_path: str, output_format: str = 'csv'):
             print("Для сохранения в Excel требуется библиотека openpyxl")
 
 
+def parse_arguments():
+    """Парсит аргументы командной строки."""
+    parser = argparse.ArgumentParser(
+        description='Агрегация результатов моделей машинного обучения'
+    )
+    parser.add_argument(
+        'PATH_folder',
+        type=str,
+        nargs='?',
+        default=PATH_folder,
+        help='Путь к папке с результатами моделей'
+    )
+    return parser.parse_args()
+
+
 def main():
     """Основная функция скрипта."""
-    print(f"Агрегация результатов из: {PATH_folder}")
+    args = parse_arguments()
+    base_path = args.PATH_folder
+    
+    print(f"Агрегация результатов из: {base_path}")
     print("-" * 60)
     
     # Агрегируем результаты
-    df, cv_info = aggregate_results(PATH_folder)
+    df, cv_info = aggregate_results(base_path)
     
     if not df.empty:
         # Сохраняем результаты
-        save_results(df, PATH_folder, output_format='csv')
+        save_results(df, base_path, output_format='csv')
         
         # Сохраняем информацию о разбиении
         if cv_info:
-            save_cv_split_info(cv_info, PATH_folder)
+            save_cv_split_info(cv_info, base_path)
         
         print("-" * 60)
         print(f"Всего обработано комбинаций: {len(df)}")
